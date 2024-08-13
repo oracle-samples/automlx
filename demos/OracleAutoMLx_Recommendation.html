@@ -3,7 +3,7 @@
 <head><meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>OracleAutoMLx_AnomalyDetection</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>OracleAutoMLx_Recommendation</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 
 
 
@@ -14580,9 +14580,8 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<hr>
-<h1><font color=red>Building and Explaining an Anomaly Detector using AutoMLx - Experimental</font></h1>
-<p style="margin-left:10%; margin-right:10%;">by the <font color=teal> Oracle AutoMLx Team </font></p><hr>
+<p><h1><font color=red>Building a Recommender using AutoMLx</font></h1></p>
+<p style="margin-left:5%; margin-right:5%;">by the <font color=teal> Oracle AutoMLx Team </font></p><hr>
 
 </div>
 </div>
@@ -14594,8 +14593,8 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Anomaly Detection Demo Notebook.</p>
-<p>Copyright © 2023, Oracle and/or its affiliates.</p>
+<p>Recommendation Demo Notebook.</p>
+<p>Copyright © 2024, Oracle and/or its affiliates.</p>
 <p>Licensed under the Universal Permissive License v 1.0 as shown at <a href="https://oss.oracle.com/licenses/upl/">https://oss.oracle.com/licenses/upl/</a></p>
 
 </div>
@@ -14608,65 +14607,43 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Overview-of-this-Notebook">Overview of this Notebook<a class="anchor-link" href="#Overview-of-this-Notebook">&#182;</a></h2><p>In this notebook we will build an anomaly detection model using the experimental, fully unsupervised anomaly detection pipeline in Oracle AutoMLx for the public Credit Card Fraud dataset. The dataset is a binary anomaly detection dataset, and more details about the dataset can be found at <a href="https://www.openml.org/d/1597">https://www.openml.org/d/1597</a>.
-We explore the various options provided by the Oracle AutoMLx tool, allowing the user to control the AutoML training process. We then evaluate the different models trained by AutoML. Finally we provide an overview of the possibilities that Oracle AutoMLx provides for explaining the predictions of the tuned model.</p>
+<h1 id="Overview-of-this-Notebook">Overview of this Notebook<a class="anchor-link" href="#Overview-of-this-Notebook">&#182;</a></h1><p>In this notebook we will build a recommender using the Oracle AutoMLx tool for the Movielens 100k dataset to predict the next item that users will most likely watch, based on their ratings history.
+We explore the various options provided by the Oracle AutoMLx tool, allowing the user to control the AutoMLx training process. We finally evaluate the different models trained by AutoMLx. Depending on the machine running this notebook, it can take up to minutes.</p>
 <hr>
-<h2 id="Prerequisites">Prerequisites<a class="anchor-link" href="#Prerequisites">&#182;</a></h2><ul>
-<li>Experience level: novice (Python and Machine Learning)</li>
-<li>Professional experience: some industry experience</li>
+<h2 id="Prerequisites:">Prerequisites:<a class="anchor-link" href="#Prerequisites:">&#182;</a></h2><ul>
+<li>Experience level: Novice (Python and Machine Learning)</li>
+<li>Professional experience: Some industry experience</li>
 </ul>
 <hr>
-<h2 id="Business-Use">Business Use<a class="anchor-link" href="#Business-Use">&#182;</a></h2><p>Data analytics and modeling problems using Machine Learning (ML) are becoming popular and often rely on data science expertise to build accurate ML models. Such modeling tasks primarily involve the following steps:</p>
+<h2 id="Business-Use:">Business Use:<a class="anchor-link" href="#Business-Use:">&#182;</a></h2><p>Data analytics and modeling problems using Machine Learning (ML) are becoming popular and often rely on data science expertise to build accurate ML models. Such modeling tasks primarily involve the following steps:</p>
 <ul>
 <li>Preprocess dataset (clean, impute, engineer features, normalize).</li>
-<li>Pick an appropriate model for the given dataset and prediction task at hand.<!-- - Reduce the dataset size using feature selection to reduce the overall runtime of the machine learning tasks and improve model scores --></li>
+<li>Pick an appropriate model for the given dataset and prediction task at hand.</li>
 <li>Tune the chosen model’s hyperparameters for the given dataset.</li>
 </ul>
 <p>All of these steps are significantly time consuming and heavily rely on data scientist expertise. Unfortunately, to make this problem harder, the best feature subset, model, and hyperparameter choice widely varies with the dataset and the prediction task. Hence, there is no one-size-fits-all solution to achieve reasonably good model performance. Using a simple Python API, AutoML can quickly jump-start the datascience process with an accurately-tuned model and appropriate features for a given prediction task.</p>
 <h2 id="Table-of-Contents">Table of Contents<a class="anchor-link" href="#Table-of-Contents">&#182;</a></h2><ul>
-<li><a href='#setup'>Setup</a></li>
-<li><a href='#load-data'>Load the Credit Card dataset</a></li>
-<li><a href='#AutoML'>AutoML</a><ul>
-<li><a href='#Engine'>Setting the execution engine</a></li>
-<li><a href='#provider'>Create an Instance of AutoMLx</a></li>
-<li><a href='#default'>Train a Model using AutoMLx</a></li>
-<li><a href='#analyze'>Analyze the AutoMLx optimization process </a><ul>
-<li><a href='#algorithm-selection'>Algorithm Selection</a></li>
-<li><a href='#hyperparameter-tuning'>Hyperparameter Tuning</a></li>
+<li><a href='#setup'> Setup</a></li>
+<li><a href='#load-data'> Load the Movielens 100k dataset</a><ul>
+<li><a href='#coltypes'> Define the column types</a></li>
+<li><a href='#dataset-split'>Splitting the dataset</a></li>
 </ul>
 </li>
-<li><a href='#timebudget'>Specify a Time Budget to AutoML</a></li>
+<li><a href='#automl'> AutoML</a><ul>
+<li><a href='#provider'> Create an Instance of AutoMLx</a></li>
+<li><a href='#default'> Train a Model using AutoMLx</a></li>
+<li><a href='#recommending'> Generate recommendations </a></li>
+<li><a href='#analyze'> Analyze the AutoMLx optimization process </a><ul>
+<li><a href='#algorithm-selection'> Algorithm Selection</a></li>
+<li><a href='#hyperparameter-tuning'> Hyperparameter Tuning</a></li>
 </ul>
 </li>
-<li><a href='#MLX'>Machine Learning Explainability (MLX)</a><ul>
-<li><a href='#MLX-initialization'>Initialize an MLExplainer</a></li>
-<li><a href='#MLX-global'>Model Explanations (Global Feature Importance)</a></li>
-<li><a href='#MLX-dependency'>Feature Dependence Explanations</a></li>
-<li><a href='#MLX-local'>Prediction Explanations (Local Feature Importance)</a></li>
-<li><a href='#MLX-whatif'>Interactive What-If Explanations</a></li>
-<li><a href='#Counterfactuals'>Counterfactual Explanations</a></li>
-<li><a href='#MLX-alfi'>Aggregate Local Feature Importance &amp; Local Feature Importance Built-in Sampling</li>
-<li><a href='#MLX-advanced'>Advanced Feature Importance Options</a><ul>
-<li><a href='#MLX-changing'>Change the number of iterations</a></li>
-<li><a href='#MLX-including'>Include the effects of feature interactions (with Shapley feature importance)</a></li>
+<li><a href='#modellist'> Advanced AutoMLx Configuration</a></li>
+<li><a href='#custom-validation'> Use a custom validation set</a></li>
+<li><a href='#evaluation'> Final evaluation of the best model</a></li>
 </ul>
 </li>
-<li><a href='#MLX-advanced-ale'>Advanced Feature Dependence Options (ALE)</a></li>
 </ul>
-</li>
-<li><a href='#ref'>References</a></li>
-</ul>
-
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p><a id='setup'></a></p>
 <h2 id="Setup">Setup<a class="anchor-link" href="#Setup">&#182;</a></h2><p>Basic setup for the Notebook.</p>
 
@@ -14681,57 +14658,27 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="nv">rdata</span><span class="o">==</span><span class="m">0</span>.9
-
-<span class="o">%</span><span class="k">matplotlib</span> inline
-<span class="o">%</span><span class="k">load_ext</span> autoreload
-<span class="o">%</span><span class="k">autoreload</span> 2
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Load the required modules.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">urllib</span>
-<span class="kn">import</span> <span class="nn">rdata</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-
-<span class="kn">import</span> <span class="nn">plotly.figure_factory</span> <span class="k">as</span> <span class="nn">ff</span>
-<span class="kn">import</span> <span class="nn">plotly.express</span> <span class="k">as</span> <span class="nn">px</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">f1_score</span><span class="p">,</span> <span class="n">confusion_matrix</span>
-<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
-<span class="kn">from</span> <span class="nn">pyod.models.iforest</span> <span class="kn">import</span> <span class="n">IForest</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">urllib</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">automlx</span> <span class="kn">import</span> <span class="n">AutoRecommender</span><span class="p">,</span> <span class="n">init</span>
 
 <span class="c1"># Settings for plots</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">15</span>
-<span class="kn">import</span> <span class="nn">automlx</span>
-<span class="kn">from</span> <span class="nn">automlx</span> <span class="kn">import</span> <span class="n">init</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;font.size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">15</span>
+
+<span class="c1"># Silence unnecessary warnings</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;sanerec.autotuning.parameter&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
+
+<span class="c1"># Initialize the parallelization engine of AutoMLx</span>
+<span class="n">init</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="s1">&#39;ray&#39;</span><span class="p">,</span> <span class="n">engine_opts</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;ray_setup&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;log_to_driver&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}})</span>
 </pre></div>
 
      </div>
@@ -14747,7 +14694,9 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p><a id='load-data'></a></p>
-<h2 id="Load-the-Credit-Card-Fraud-Dataset">Load the Credit Card Fraud Dataset<a class="anchor-link" href="#Load-the-Credit-Card-Fraud-Dataset">&#182;</a></h2><p>We start by retrieving and reading in the dataset from provided URL.</p>
+<h2 id="Load-Movielens-100k-data">Load Movielens 100k data<a class="anchor-link" href="#Load-Movielens-100k-data">&#182;</a></h2><p>Movielens 100k dataset is one of the most common public datasets for movie recommendation. It contains 100k ratings from about 1k users on 1.6k movies, some information about user demographic, and additional movie characteristics. For more information about this dataset, you can visit the <a href="https://grouplens.org/datasets/movielens/100k/">Movielens website</a>.</p>
+<p>In this demo, we use the ratings to train a movie recommendation model, exploiting AutoMLx to find the best recommendation model and hyperparameters to use in terms of recommendation accuracy.
+Therefore, we start retrieving and loading the ratings data of the Movielens 100k dataset.</p>
 
 </div>
 </div>
@@ -14760,14 +14709,29 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;http://www.ulb.ac.be/di/map/adalpozz/data/creditcard.Rdata&quot;</span>
-<span class="n">dst_path</span> <span class="o">=</span> <span class="s2">&quot;./creditcard.Rdata&quot;</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39; wget https://files.grouplens.org/datasets/movielens/ml-100k/u.data --no-check-certificate -q -O ./ml100k_interactions.tsv&#39;</span><span class="p">)</span>
+</pre></div>
 
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dst_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
-    <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-<span class="n">parsed_res</span> <span class="o">=</span> <span class="n">rdata</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse_file</span><span class="p">(</span><span class="n">dst_path</span><span class="p">)</span>
-<span class="n">res</span> <span class="o">=</span> <span class="n">rdata</span><span class="o">.</span><span class="n">conversion</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">parsed_res</span><span class="p">)</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;creditcard&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;Time&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+     </div>
+</div>
+</div>
+</div>
+
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+    <span class="s2">&quot;./ml100k_interactions.tsv&quot;</span><span class="p">,</span>
+    <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">,</span> <span class="s2">&quot;movie_id&quot;</span><span class="p">,</span> <span class="s2">&quot;rating&quot;</span><span class="p">,</span> <span class="s2">&quot;timestamp&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">dataset</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14782,7 +14746,8 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>In this case, the target is identified by the <code>Class</code> column.</p>
+<p>In order to be used for the recommendation task, the data must have a timestamp column that is used to infer the temporal order of the samples. We also require to set the timestamp column as index of the dataframes used in our AutoML pipelines.</p>
+<p>Movielens contains a <code>timestamp</code> column that contains the time when a rating was given, so we set it as index of our dataframe.</p>
 
 </div>
 </div>
@@ -14795,7 +14760,8 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;Class&#39;</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;timestamp&quot;</span><span class="p">)</span>
+<span class="n">dataset</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -14810,306 +14776,96 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>We reduce the total number of features to 20 to have a reasonable training time for this demonstration.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">20</span><span class="p">]</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Since the dataset is not split into training and validation sets by default, we now split it into training (60%) and test (40%) datasets. The training set will be used to create a Machine Learning model using AutoML, and the test set will be used to evaluate the model's performance on unseen data.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">train_size</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
-
-<span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">X_test</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Again to keep the training time reasonable, we also downsample to use 5% of the total training set.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">train_size</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y_train</span><span class="p">)</span>
-
-<span class="n">X_train</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>We also need to reset the indexes after our downsampling.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">y_train</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Lets look at a few of the samples in the training dataset.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X_train</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>The Credit card fraud dataset contains numerical data.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;Data type&#39;</span><span class="p">:</span> <span class="n">X_train</span><span class="o">.</span><span class="n">dtypes</span><span class="p">})</span><span class="o">.</span><span class="n">T</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>The Oracle AutoMLx solution automatically handles missing values by dropping features with too many missing values, and filling in the remaining missing values based on the feature type.</p>
-<p>In this case, there are no such missing values in our training dataset.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;% missing values&#39;</span><span class="p">:</span> <span class="n">X_train</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)})</span><span class="o">.</span><span class="n">T</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>We visualize the distribution of the target variable in the data. The dataset is heavily unbalanced, as is often the case in the anomaly detection use-case.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">y_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span>
-<span class="n">y_df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;income&#39;</span><span class="p">]</span>
-
-<span class="n">fig</span> <span class="o">=</span> <span class="n">px</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">y_df</span><span class="p">[</span><span class="s2">&quot;income&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;False&quot;</span> <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span> <span class="k">else</span> <span class="s2">&quot;True&quot;</span><span class="p">),</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;income&quot;</span><span class="p">)</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">xaxis_title</span><span class="o">=</span><span class="s2">&quot;Anomaly&quot;</span><span class="p">)</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><a id='AutoML'></a></p>
-<h2 id="AutoML">AutoML<a class="anchor-link" href="#AutoML">&#182;</a></h2>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><a id='Engine'></a></p>
-<h3 id="Setting-the-execution-engine">Setting the execution engine<a class="anchor-link" href="#Setting-the-execution-engine">&#182;</a></h3><p>The AutoMLx package offers the function <code>init</code>, which allows to initialize the parallelization engine.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">init</span><span class="p">(</span><span class="n">engine</span><span class="o">=</span><span class="s1">&#39;ray&#39;</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><a id='provider'></a></p>
-<h3 id="Create-an-instance-of-AutoML-for-Unsupervised-Anomaly-Detection---Experimental-Feature">Create an instance of AutoML for Unsupervised Anomaly Detection - Experimental Feature<a class="anchor-link" href="#Create-an-instance-of-AutoML-for-Unsupervised-Anomaly-Detection---Experimental-Feature">&#182;</a></h3><p>The Oracle AutoMLx solution provides a pipeline that automatically finds a tuned model given a prediction task and a training dataset. In particular it allows to find a tuned model for the task of Unsupervised Anomaly Detection (UAD), where the training labels (whether a training point is an anomaly or not) are unknown.</p>
-<p>The AutoML UAD Pipeline consists of three main modules:</p>
+<p><a id='coltypes'></a></p>
+<h3 id="Define-types-of-columns-in-the-dataframe">Define types of columns in the dataframe<a class="anchor-link" href="#Define-types-of-columns-in-the-dataframe">&#182;</a></h3><p>The recommendation task requires to define the two main entities involved in the recommendation:</p>
 <ul>
-<li><strong>Preprocessing</strong> : Clean, impute, engineer, and normalize features.</li>
-<li><strong>Algorithm Selection</strong> : Identify the right algorithm for a given dataset, choosing from amongst the following Outlier Detectors (OD):<ul>
-<li>IsolationForestOD</li>
-<li>SubspaceOD</li>
-<li>HistogramOD</li>
-<li>ClusteringLocalFactorOD</li>
-<li>PrincipalCompOD</li>
-<li>MinCovOD</li>
-<li>AutoEncoder</li>
-<li>KNearestNeighborsOD</li>
-<li>OneClassSVMOD</li>
+<li>the <code>recommendation</code>, which represents the entity type that is going to be recommended;</li>
+<li>the <code>recommendation_subject</code>, which represents the entity type that receives the recommendation.</li>
 </ul>
-</li>
-<li><strong>Hyperparameter Tuning</strong> : Find the best model hyperparameters that maximize score for the given dataset.</li>
-</ul>
-<p>All these pieces are readily combined into a simple AutoML pipeline which automates the entire Machine Learning process with minimal user input/interaction.</p>
+<p>For this reason, AutoML requires to indicate what are the columns in the dataset that refer to these two concepts, and, in particular, the two columns that contain their unique identifiers.</p>
+<p>In our demo we want to recommend movies (<code>recommendation</code>), identified by the <code>movie_id</code> column, to users (<code>recommendation_subject</code>), identified by the <code>user_id</code> column. We declare this binding in a python dictionary that we will reuse throughout the demo.</p>
 
 </div>
 </div>
 </div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">col_types</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;movie_id&quot;</span><span class="p">:</span> <span class="s2">&quot;recommendation&quot;</span><span class="p">,</span> <span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="s2">&quot;recommendation_subject&quot;</span><span class="p">}</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><a id='dataset-split'></a></p>
+<h2 id="Splitting-the-dataset">Splitting the dataset<a class="anchor-link" href="#Splitting-the-dataset">&#182;</a></h2><p>We split the dataset into training and test datasets using a leave-last-out technique.
+The training set will be used to create a Machine Learning model using Oracle AutoMLx, and the test set will be used to evaluate the model's performance on unseen data.</p>
+<p>The leave-last-out splitting technique consists in keeping in the test set only the last data sample, as determined by its timestamp, for each <code>recommendation_subject</code> (user in this case). All the other samples form the training set. This corresponds to the common next item recommendation use case, where given the history of all the past data concerning a <code>recommendation_subject</code> in the training set, we want to predict what should be recommended next to the same subject, and check if it corresponds to the actual sample in the test set.</p>
+
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">training_data</span><span class="p">,</span> <span class="n">test_data</span> <span class="o">=</span> <span class="n">AutoRecommender</span><span class="o">.</span><span class="n">train_test_split</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span> <span class="n">col_types</span><span class="o">=</span><span class="n">col_types</span><span class="p">)</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><a id='automl'></a></p>
+<h1 id="AutoML">AutoML<a class="anchor-link" href="#AutoML">&#182;</a></h1><p><a id='provider'></a></p>
+<h2 id="Create-an-instance-of-Oracle-AutoMLx">Create an instance of Oracle AutoMLx<a class="anchor-link" href="#Create-an-instance-of-Oracle-AutoMLx">&#182;</a></h2><p>The Oracle AutoMLx solution provides a pipeline that automatically finds a tuned model given a prediction task and a training dataset. In particular, it allows finding a tuned model for any supervised prediction task, for example, classification or regression where the target can be binary, categorical or real-valued.</p>
+<p>In this demo we want a model that performs a recommendation task, so we create a pipeline of type <code>AutoRecommender</code>, and we configure it with default parameters. You can find the complete list of all the available parameters and their meaning in our documentation.</p>
+
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">automl_pipeline</span> <span class="o">=</span> <span class="n">AutoRecommender</span><span class="p">()</span><span class="o">.</span><span class="n">configure</span><span class="p">()</span>
+</pre></div>
+
+     </div>
+</div>
+</div>
+</div>
+
 </div>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
 <div class="jp-Cell-inputWrapper">
@@ -15118,8 +14874,7 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p><a id='default'></a></p>
-<h3 id="Train-a-model-using-Oracle-AutoMLx">Train a model using Oracle AutoMLx<a class="anchor-link" href="#Train-a-model-using-Oracle-AutoMLx">&#182;</a></h3><p>The AutoMLx API is quite simple to work with. We create an instance of the pipeline. Next, the training data is passed to the <code>fit()</code> function which successively executes the three previously mentioned modules.</p>
-<p>A model is then generated and can be used for prediction tasks. We then evaluate the performance of the model on unseen data (<code>X_test</code>) using the F1-score.</p>
+<h2 id="Train-a-model-using-AutoMLx">Train a model using AutoMLx<a class="anchor-link" href="#Train-a-model-using-AutoMLx">&#182;</a></h2><p>The training data is passed to the <code>fit()</code> function which executes the model selection and hyperparameter tuning steps.</p>
 
 </div>
 </div>
@@ -15132,14 +14887,37 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">est</span> <span class="o">=</span> <span class="n">automlx</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;anomaly_detection&#39;</span><span class="p">,</span> <span class="n">score_metric</span><span class="o">=</span><span class="s1">&#39;unsupervised_unify95&#39;</span><span class="p">)</span>
-<span class="n">est</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">automl_pipeline</span> <span class="o">=</span> <span class="n">automl_pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">training_data</span><span class="p">,</span> <span class="n">col_types</span><span class="o">=</span><span class="n">col_types</span><span class="p">)</span>
+</pre></div>
 
-<span class="n">y_pred</span> <span class="o">=</span> <span class="n">est</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+     </div>
+</div>
+</div>
+</div>
 
-<span class="n">score_default</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">y_test</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="n">y_pred</span><span class="p">)</span>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><a id='recommending'></a></p>
+<h2 id="Generate-recommendations">Generate recommendations<a class="anchor-link" href="#Generate-recommendations">&#182;</a></h2><p>Once the AutoML pipeline is completed, we predict 5 recommendations for a random user in the dataset.</p>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;F1-Score on test data : </span><span class="si">{</span><span class="n">score_default</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+     <div class="CodeMirror cm-s-jupyter">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">recommendation_subjects</span> <span class="o">=</span> <span class="n">test_data</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">1</span><span class="p">)[[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]]</span>
+<span class="n">automl_pipeline</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">subjects</span><span class="o">=</span><span class="n">recommendation_subjects</span><span class="p">,</span> <span class="n">n_recommendations</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -15155,27 +14933,16 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p><a id='analyze'></a></p>
-<h3 id="Analyze-the-AutoML-optimization-process">Analyze the AutoML optimization process<a class="anchor-link" href="#Analyze-the-AutoML-optimization-process">&#182;</a></h3><p>During AutoML training, a summary of the optimization process is logged, containing:</p>
+<h2 id="Analyze-the-AutoMLx-optimization-process">Analyze the AutoMLx optimization process<a class="anchor-link" href="#Analyze-the-AutoMLx-optimization-process">&#182;</a></h2><p>During the Oracle AutoMLx process for recommendation, a summary of the optimization process is logged, containing:</p>
 <ul>
 <li>Information about the training data.</li>
-<li>Information about the AutoML pipeline, such as:<ul>
+<li>Information about the AutoMLx Pipeline, such as:<ul>
 <li>Selected algorithm that was the best choice for this data;</li>
 <li>Selected hyperparameters for the selected algorithm.</li>
 </ul>
 </li>
 </ul>
-
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>AutoML provides a <code>print_summary()</code> API to output all the different trials performed.</p>
+<p>AutoMLx provides a <code>print_summary</code> API to output all the different trials performed.</p>
 
 </div>
 </div>
@@ -15188,7 +14955,7 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">est</span><span class="o">.</span><span class="n">print_summary</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">automl_pipeline</span><span class="o">.</span><span class="n">print_summary</span><span class="p">()</span>
 </pre></div>
 
      </div>
@@ -15203,20 +14970,9 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>We also provide the capability to visualize the results of each stage of the AutoML pipeline.</p>
-
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p>We also provide the capability to visualize the results of each stage of the AutoMLx pipeline.</p>
 <p><a id='algorithm-selection'></a></p>
-<h4 id="Algorithm-Selection">Algorithm Selection<a class="anchor-link" href="#Algorithm-Selection">&#182;</a></h4><p>The plot below shows the scores predicted by Algorithm Selection for each algorithm. The horizontal line shows the average score across all algorithms. Algorithms below the line are colored turquoise, whereas those with a score higher than the mean are colored teal. Here we can see that the <code>MinCovOD</code> achieved the highest predicted score (orange bar), and is chosen for subsequent stages of the Pipeline.</p>
+<h3 id="Algorithm-Selection">Algorithm Selection<a class="anchor-link" href="#Algorithm-Selection">&#182;</a></h3><p>The plot below shows the scores predicted by Algorithm Selection for each algorithm. The horizontal line shows the average score across all algorithms. Algorithms below the line are colored turquoise, whereas those with a score higher than the mean are colored teal. The selected algorithm is in orange.</p>
 
 </div>
 </div>
@@ -15229,34 +14985,39 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Each trial is a row in a dataframe that contains</span>
-<span class="c1"># Algorithm, Number of Samples, Number of Features, Hyperparameters, Score, Runtime, Memory Usage, Step as features</span>
-<span class="n">trials</span> <span class="o">=</span> <span class="n">est</span><span class="o">.</span><span class="n">completed_trials_summary_</span><span class="p">[</span><span class="n">est</span><span class="o">.</span><span class="n">completed_trials_summary_</span><span class="p">[</span><span class="s2">&quot;Step&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;Model Selection&#39;</span><span class="p">)]</span>
-<span class="n">name_of_score_column</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Score (</span><span class="si">{</span><span class="n">est</span><span class="o">.</span><span class="n">_inferred_score_metric</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span>
-<span class="n">trials</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">trials</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="n">name_of_score_column</span><span class="p">],</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-<span class="n">scores</span> <span class="o">=</span> <span class="n">trials</span><span class="p">[</span><span class="n">name_of_score_column</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-<span class="n">models</span> <span class="o">=</span> <span class="n">trials</span><span class="p">[</span><span class="s1">&#39;Algorithm&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-<span class="n">colors</span> <span class="o">=</span> <span class="p">[]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">plot_model_selection_scores</span><span class="p">(</span><span class="n">_pipeline</span><span class="p">):</span>
+    <span class="c1"># Each trial is a row in a dataframe that contains</span>
+    <span class="c1"># Algorithm, Number of Samples, Number of Features, Hyperparameters, Score, Runtime, Memory Usage, Step as features</span>
+    <span class="n">trials</span> <span class="o">=</span> <span class="n">_pipeline</span><span class="o">.</span><span class="n">completed_trials_summary_</span><span class="p">[</span>
+        <span class="n">_pipeline</span><span class="o">.</span><span class="n">completed_trials_summary_</span><span class="p">[</span><span class="s2">&quot;Step&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;Model Selection&quot;</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">name_of_score_column</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Score (</span><span class="si">{</span><span class="n">_pipeline</span><span class="o">.</span><span class="n">_inferred_score_metric</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="n">trials</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">trials</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="n">name_of_score_column</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">trials</span><span class="p">[</span><span class="n">name_of_score_column</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">models</span> <span class="o">=</span> <span class="n">trials</span><span class="p">[</span><span class="s2">&quot;Algorithm&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    
+    <span class="n">y_margin</span> <span class="o">=</span> <span class="mf">0.10</span> <span class="o">*</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">scores</span><span class="p">))</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">models</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="n">_pipeline</span><span class="o">.</span><span class="n">selected_model_</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="n">colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;orange&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">s</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">s</span><span class="o">.</span><span class="n">mean</span><span class="p">():</span>
+            <span class="n">colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;teal&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;turquoise&quot;</span><span class="p">)</span>
+    
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Algorithm Selection Trials&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="o">-</span> <span class="n">y_margin</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="o">+</span> <span class="n">y_margin</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Hit Rate&quot;</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-<span class="n">y_margin</span> <span class="o">=</span> <span class="mf">0.10</span> <span class="o">*</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">scores</span><span class="p">))</span>
-<span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">models</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-    <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>  <span class="o">==</span>  <span class="n">est</span><span class="o">.</span><span class="n">selected_model_</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
-        <span class="n">colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;orange&#39;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">s</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">s</span><span class="o">.</span><span class="n">mean</span><span class="p">():</span>
-        <span class="n">colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;teal&#39;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;turquoise&#39;</span><span class="p">)</span>
-
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Algorithm Selection Trials&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="o">-</span> <span class="n">y_margin</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="o">+</span> <span class="n">y_margin</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">_inferred_score_metric</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-<span class="n">s</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">axhline</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">plot_model_selection_scores</span><span class="p">(</span><span class="n">automl_pipeline</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -15272,7 +15033,7 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p><a id='hyperparameter-tuning'></a></p>
-<h4 id="Hyperparameter-Tuning">Hyperparameter Tuning<a class="anchor-link" href="#Hyperparameter-Tuning">&#182;</a></h4><p>Hyperparameter Tuning is the last stage of the AutoML pipeline, and focuses on improving the chosen algorithm's score on the dataset. We use a novel algorithm to search across many hyperparameters dimensions, and converge automatically when optimal hyperparameters are identified. Each trial in the graph below represents a particular hyperparameters configuration for the selected model.</p>
+<h3 id="Hyperparameter-Tuning">Hyperparameter Tuning<a class="anchor-link" href="#Hyperparameter-Tuning">&#182;</a></h3><p>Hyperparameter Tuning is the last stage of the AutoMLx pipeline, and focuses on improving the chosen algorithm's score on the dataset. We use a novel iterative algorithm to search across many hyperparameter dimensions, and converge automatically when optimal hyperparameters are identified. Each trial represents a particular hyperparameter configuration for the selected model.</p>
 
 </div>
 </div>
@@ -15285,33 +15046,39 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Each trial is a row in a dataframe that contains</span>
-<span class="c1"># Algorithm, Number of Samples, Number of Features, Hyperparameters, Score, Runtime, Memory Usage, Step as features</span>
-<span class="n">trials</span> <span class="o">=</span> <span class="n">est</span><span class="o">.</span><span class="n">completed_trials_summary_</span><span class="p">[</span><span class="n">est</span><span class="o">.</span><span class="n">completed_trials_summary_</span><span class="p">[</span><span class="s2">&quot;Step&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;Model Tuning&#39;</span><span class="p">)]</span>
-<span class="n">trials</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">trials</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="n">name_of_score_column</span><span class="p">],</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-<span class="n">trials</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">trials</span><span class="p">[</span><span class="n">trials</span><span class="p">[</span><span class="s1">&#39;Finished&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-<span class="n">trials</span><span class="p">[</span><span class="s1">&#39;Finished&#39;</span><span class="p">]</span><span class="o">=</span> <span class="n">trials</span><span class="p">[</span><span class="s1">&#39;Finished&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">mktime</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">x</span><span class="p">,</span>
-                                             <span class="s2">&quot;</span><span class="si">%a</span><span class="s2"> %b </span><span class="si">%d</span><span class="s2"> %H:%M:%S %Y&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()))</span>
-<span class="n">trials</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Finished&#39;</span><span class="p">],</span><span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
-<span class="n">scores</span> <span class="o">=</span> <span class="n">trials</span><span class="p">[</span><span class="n">name_of_score_column</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-<span class="n">score</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">score</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scores</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">)):</span>
-    <span class="k">if</span> <span class="n">scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&gt;=</span> <span class="n">score</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-        <span class="n">score</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scores</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">score</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-<span class="n">y_margin</span> <span class="o">=</span> <span class="mf">0.10</span> <span class="o">*</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">score</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">plot_hp_tuning_scores</span><span class="p">(</span><span class="n">_pipeline</span><span class="p">):</span>
+    <span class="c1"># Each trial is a row in a dataframe that contains</span>
+    <span class="c1"># Algorithm, Number of Samples, Number of Features, Hyperparameters, Score, Runtime, Memory Usage, Step as features</span>
+    <span class="n">trials</span> <span class="o">=</span> <span class="n">_pipeline</span><span class="o">.</span><span class="n">completed_trials_summary_</span><span class="p">[</span>
+        <span class="n">_pipeline</span><span class="o">.</span><span class="n">completed_trials_summary_</span><span class="p">[</span><span class="s2">&quot;Step&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s2">&quot;Model Tuning&quot;</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">name_of_score_column</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Score (</span><span class="si">{</span><span class="n">_pipeline</span><span class="o">.</span><span class="n">_inferred_score_metric</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="n">trials</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">trials</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="p">[</span><span class="n">name_of_score_column</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">trials</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">trials</span><span class="p">[</span><span class="n">trials</span><span class="p">[</span><span class="s2">&quot;Finished&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">trials</span><span class="p">[</span><span class="s2">&quot;Finished&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">trials</span><span class="p">[</span><span class="s2">&quot;Finished&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">mktime</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%a</span><span class="s2"> %b </span><span class="si">%d</span><span class="s2"> %H:%M:%S %Y&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">timetuple</span><span class="p">())</span>
+    <span class="p">)</span>
+    <span class="n">trials</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Finished&quot;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">trials</span><span class="p">[</span><span class="n">name_of_score_column</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">score</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scores</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">score</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]:</span>
+            <span class="n">score</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scores</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">score</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">y_margin</span> <span class="o">=</span> <span class="mf">0.10</span> <span class="o">*</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">score</span><span class="p">))</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Hyperparameter Tuning Trials&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Iteration $n$&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Hit Rate&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;g&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="o">-</span> <span class="n">y_margin</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="o">+</span> <span class="n">y_margin</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">trials</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">score</span><span class="p">,</span> <span class="s2">&quot;k:&quot;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;teal&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Hyperparameter Tuning Trials&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Iteration $n$&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">est</span><span class="o">.</span><span class="n">_inferred_score_metric</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="o">-</span> <span class="n">y_margin</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">score</span><span class="p">)</span> <span class="o">+</span> <span class="n">y_margin</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">trials</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">score</span><span class="p">,</span> <span class="s1">&#39;k:&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;teal&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">plot_hp_tuning_scores</span><span class="p">(</span><span class="n">automl_pipeline</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -15326,7 +15093,8 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h4 id="Confusion-Matrix">Confusion Matrix<a class="anchor-link" href="#Confusion-Matrix">&#182;</a></h4><p>Evaluating an anomaly detection model is slightly more involved. Essentially, we would like to know when the model was wrong and when the model was right. We use a <strong>Confusion Matrix</strong> to help us visualize the model's behavior.</p>
+<p><a id='modellist'></a></p>
+<h2 id="Advanced-AutoMLx-Configuration">Advanced AutoMLx Configuration<a class="anchor-link" href="#Advanced-AutoMLx-Configuration">&#182;</a></h2><p>You can also configure the AutoRecommender pipeline with suitable parameters according to your needs.</p>
 
 </div>
 </div>
@@ -15339,29 +15107,19 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">])</span>
-<span class="n">cm</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="n">cm</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
-
-<span class="n">text</span> <span class="o">=</span> <span class="p">[[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">y</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cm</span><span class="p">]</span>
-<span class="n">fig</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">create_annotated_heatmap</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Normal&#39;</span><span class="p">,</span> <span class="s1">&#39;Fraud&#39;</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Normal&#39;</span><span class="p">,</span> <span class="s1">&#39;Fraud&#39;</span><span class="p">],</span> <span class="n">annotation_text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">colorscale</span><span class="o">=</span><span class="s1">&#39;Viridis&#39;</span><span class="p">)</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">add_annotation</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">font</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">14</span><span class="p">),</span>
-                        <span class="n">x</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-                        <span class="n">y</span><span class="o">=-</span><span class="mf">0.15</span><span class="p">,</span>
-                        <span class="n">showarrow</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Predicted value&quot;</span><span class="p">,</span>
-                        <span class="n">xref</span><span class="o">=</span><span class="s2">&quot;paper&quot;</span><span class="p">,</span>
-                        <span class="n">yref</span><span class="o">=</span><span class="s2">&quot;paper&quot;</span><span class="p">))</span>
-
-<span class="n">fig</span><span class="o">.</span><span class="n">add_annotation</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">font</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">14</span><span class="p">),</span>
-                        <span class="n">x</span><span class="o">=-</span><span class="mf">0.15</span><span class="p">,</span>
-                        <span class="n">y</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-                        <span class="n">showarrow</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                        <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Actual&quot;</span><span class="p">,</span>
-                        <span class="n">textangle</span><span class="o">=-</span><span class="mi">90</span><span class="p">,</span>
-                        <span class="n">xref</span><span class="o">=</span><span class="s2">&quot;paper&quot;</span><span class="p">,</span>
-                        <span class="n">yref</span><span class="o">=</span><span class="s2">&quot;paper&quot;</span><span class="p">))</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">margin</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">t</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">l</span><span class="o">=</span><span class="mi">150</span><span class="p">))</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">custom_pipeline</span> <span class="o">=</span> <span class="n">AutoRecommender</span><span class="p">()</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span>
+    <span class="n">model_list</span><span class="o">=</span><span class="p">[</span>  <span class="c1"># Specify the models you want the AutoMLx to consider</span>
+        <span class="s2">&quot;ItemKNNRecommender&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;AlsRecommender&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;BprRecommender&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">n_algos_tuned</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># Choose how many models to tune</span>
+    <span class="n">search_space</span><span class="o">=</span><span class="p">{</span>  <span class="c1"># You can specify the hyperparameters and ranges we search for each model</span>
+        <span class="s2">&quot;ItemKNNRecommender&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;num_of_neighbors&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;range&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;continuous&quot;</span><span class="p">}}</span>
+    <span class="p">},</span>
+    <span class="n">max_tuning_trials</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>  <span class="c1"># The maximum number of tuning trials. Can be integer or Dict (max number for each model)</span>
+    <span class="n">score_metric</span><span class="o">=</span><span class="s2">&quot;recall&quot;</span><span class="p">,</span>  <span class="c1"># Any of the metrics available, see the documentation for a list of supported values</span>
+<span class="p">)</span>
 </pre></div>
 
      </div>
@@ -15376,8 +15134,8 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><a id='timebudget'></a></p>
-<h3 id="Specify-a-time-budget-to-Oracle-AutoMLx">Specify a time budget to Oracle AutoMLx<a class="anchor-link" href="#Specify-a-time-budget-to-Oracle-AutoMLx">&#182;</a></h3><p>The Oracle AutoMLx tool also allows a user to specify a time budget in seconds. Given the small size of this dataset, we give a small time budget of 10 seconds using the <code>time_budget</code> argument to <code>fit()</code>.</p>
+<p><a id='custom-validation'></a></p>
+<h2 id="Use-a-custom-validation-set">Use a custom validation set<a class="anchor-link" href="#Use-a-custom-validation-set">&#182;</a></h2><p>You can specify a custom validation set that you want AutoMLx to use to evaluate the quality of models and configurations.</p>
 
 </div>
 </div>
@@ -15390,166 +15148,10 @@ We explore the various options provided by the Oracle AutoMLx tool, allowing the
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">est_timebudget</span> <span class="o">=</span> <span class="n">automlx</span><span class="o">.</span><span class="n">Pipeline</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">&#39;anomaly_detection&#39;</span><span class="p">,</span> <span class="n">score_metric</span><span class="o">=</span><span class="s1">&#39;unsupervised_unify95&#39;</span><span class="p">)</span>
-<span class="n">est_timebudget</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">time_budget</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">y_pred</span> <span class="o">=</span> <span class="n">est_timebudget</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
-<span class="n">score_timebudget</span> <span class="o">=</span> <span class="n">f1_score</span><span class="p">(</span><span class="n">y_test</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="n">y_pred</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">training_data</span><span class="p">,</span> <span class="n">validation_data</span> <span class="o">=</span> <span class="n">AutoRecommender</span><span class="o">.</span><span class="n">train_test_split</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">training_data</span><span class="p">,</span> <span class="n">col_types</span><span class="o">=</span><span class="n">col_types</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;F1-Score on test data : </span><span class="si">{</span><span class="n">score_timebudget</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</pre></div>
 
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><a id='MLX'></a></p>
-<h2 id="Machine-Learning-Explainability">Machine Learning Explainability<a class="anchor-link" href="#Machine-Learning-Explainability">&#182;</a></h2>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>For a variety of decision-making tasks, getting only a prediction as model output is not sufficient. A user may wish to know why the model outputs that prediction, or which data features are relevant for that prediction. For that purpose the Oracle AutoMLx solution defines the <code>MLExplainer</code> object, which allows to compute a variety of model explanations.</p>
-<p><a id='MLX-initializing'></a></p>
-<h3 id="Initialize-an-MLExplainer">Initialize an MLExplainer<a class="anchor-link" href="#Initialize-an-MLExplainer">&#182;</a></h3><p>The <code>MLExplainer</code> object takes as argument the trained model, the training data and the task. If you know the labels for your dataset, you may provide them; however, since we are dealing with anomaly detection they are optional. When the labels are not provided, we will use the model's predictions instead.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">explainer</span> <span class="o">=</span> <span class="n">automlx</span><span class="o">.</span><span class="n">MLExplainer</span><span class="p">(</span><span class="n">est</span><span class="p">,</span>
-                              <span class="n">X_train</span><span class="p">,</span>
-                              <span class="n">target_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Normal&#39;</span><span class="p">,</span> <span class="s1">&#39;Anomaly&#39;</span><span class="p">],</span>
-                              <span class="n">task</span><span class="o">=</span><span class="s1">&#39;anomaly_detection&#39;</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><a id='MLX-global'></a></p>
-<h3 id="Model-Explanations-(Global-Feature-Importance)">Model Explanations (Global Feature Importance)<a class="anchor-link" href="#Model-Explanations-(Global-Feature-Importance)">&#182;</a></h3>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>The notion of Global Feature Importance intuitively measures how much the model's performance (relative to the model's original predictions or the provided train labels, if available) would change if a given feature were dropped from the dataset, <strong><em>and the model was retrained</em></strong>. (Note that this is unlike the default explainers for classification and regression tasks, which explain the model as if it were not retrained. Also unlike these supervised explainers, the anomaly detection explainer does not support interventional explanations.) Note that this notion of feature importance still considers each feature independently from all other features.</p>
-
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h4 id="Compute-the-importance">Compute the importance<a class="anchor-link" href="#Compute-the-importance">&#182;</a></h4>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>By default we use a permutation method to successively measure the importance of each feature. Such a method therefore runs in linear time with respect to the
-number of features in the dataset.</p>
-<p>The method <code>explain_model()</code> allows to compute such feature importances. It also provides 95% confidence intervals for each feature importance.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">result_explain_model_default</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">explain_model</span><span class="p">()</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h4 id="Visualization">Visualization<a class="anchor-link" href="#Visualization">&#182;</a></h4>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>There are two options to show the explanation's results:</p>
-<ul>
-<li><code>to_dataframe()</code> will return a dataframe of the results.</li>
-<li><code>show_in_notebook()</code> will show the results as a bar plot.</li>
-</ul>
-<p>The features are returned in decreasing order of importance.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">result_explain_model_default</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
+<span class="c1"># We run again the AutoML pipeline with the custom training/validation split we just created, and some advanced settings that we can specify directly in the fit method.</span>
 </pre></div>
 
      </div>
@@ -15565,7 +15167,12 @@ number of features in the dataset.</p>
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">result_explain_model_default</span><span class="o">.</span><span class="n">show_in_notebook</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">custom_pipeline</span> <span class="o">=</span> <span class="n">custom_pipeline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">training_data</span><span class="p">,</span>
+    <span class="n">col_types</span><span class="p">,</span>
+    <span class="n">validation_data</span><span class="p">,</span>
+    <span class="n">time_budget</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>  <span class="c1"># Specify time budget in seconds</span>
+<span class="p">)</span>
 </pre></div>
 
      </div>
@@ -15580,9 +15187,8 @@ number of features in the dataset.</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h3 id="Feature-Dependence-Explanations-(Partial-Dependence-Plots)">Feature Dependence Explanations (Partial Dependence Plots)<a class="anchor-link" href="#Feature-Dependence-Explanations-(Partial-Dependence-Plots)">&#182;</a></h3><p>Another way to measure dependency on a feature is through a partial dependence plot (PDP). Given a dataset, a PDP displays the average output of the model as a function of the value of the selected set of features.</p>
-<p>The X-axis is the value of the feature <code>V17</code> and the y-axis is the corresponding outputted price. Since we are considering the whole dataset, while the shaded interval corresponds to a 95% confidence interval for the average.</p>
-<p>The histogram on top shows the distribution of the value of the feature <code>V17</code> in the dataset.</p>
+<p>Now that the custom AutoML pipeline is completed, we can generate recommendations.
+Note that the pipeline's <code>recommend</code> method is equivalent to <code>predict</code>.</p>
 
 </div>
 </div>
@@ -15595,8 +15201,7 @@ number of features in the dataset.</p>
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">result_explain_feature_dependence_default</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">explain_feature_dependence</span><span class="p">(</span><span class="s1">&#39;V17&#39;</span><span class="p">)</span>
-<span class="n">result_explain_feature_dependence_default</span><span class="o">.</span><span class="n">show_in_notebook</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">custom_pipeline</span><span class="o">.</span><span class="n">recommend</span><span class="p">(</span><span class="n">subjects</span><span class="o">=</span><span class="n">recommendation_subjects</span><span class="p">,</span> <span class="n">n_recommendations</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -15611,45 +15216,9 @@ number of features in the dataset.</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><a id='MLX-local'></a></p>
-<h3 id="Prediction-Explanations">Prediction Explanations<a class="anchor-link" href="#Prediction-Explanations">&#182;</a></h3>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>In addition to the Model's behavior, a user might be curious about decision-logic behind the specific predictions made by the model or the impact of specific feature values on the prediction. The Oracle AutoMLx offers prediction explanations to address such concerns.</p>
-
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><a id='MLX-local'></a></p>
-<h3 id="Local-Feature-Importance">Local Feature Importance<a class="anchor-link" href="#Local-Feature-Importance">&#182;</a></h3>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Given a data sample, one can also obtain the local importance, which is the importance of the features for the model's prediction on that sample.
-In the following cell, we consider sample $1$. The function <code>explain_prediction()</code> computes the local importance for a given sample.</p>
-<p>In the plot, <code>V8=0.8878</code> means that the value of feature <code>V8</code> for that sample is <code>0.8878</code>. Removing that feature and retraining the model would change the model's prediction by the magnitude of the bar. That is, in this case, the model's prediction for the probability that the point is anomalous is approximately 0.4% larger because the model was able to observe the value for <code>V8</code>.</p>
+<p><a id='evaluation'></a></p>
+<h2 id="Final-evaluation-of-the-best-model">Final evaluation of the best model<a class="anchor-link" href="#Final-evaluation-of-the-best-model">&#182;</a></h2><p>Finally, we evaluate the best model found on the test data we have. If no metric is specified, the pipeline computes the score using the same metric used to run the Hyperparameter Tuning, which in this case is the Recall, as we defined at pipeline creation.</p>
+<p>In this example, instead, we ask the pipeline to perform the evaluation using Normalized Discounted Cumulative Gain (NDCG), a common ranking metric. Our online documentation provides the list of the available metrics and how they are computed.</p>
 
 </div>
 </div>
@@ -15662,7 +15231,8 @@ In the following cell, we consider sample $1$. The function <code>explain_predic
 <div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
      <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">anomaly_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">y_pred</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">get_ipython</span><span class="p">()</span><span class="o">.</span><span class="n">run_line_magic</span><span class="p">(</span><span class="s1">&#39;precision&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">)</span>
+<span class="n">custom_pipeline</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">test_data</span><span class="p">,</span> <span class="n">score_metric</span><span class="o">=</span><span class="s2">&quot;ndcg&quot;</span><span class="p">)</span>
 </pre></div>
 
      </div>
@@ -15670,377 +15240,6 @@ In the following cell, we consider sample $1$. The function <code>explain_predic
 </div>
 </div>
 
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">index</span> <span class="o">=</span> <span class="n">anomaly_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">result_explain_prediction_default</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">explain_prediction</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">:</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">,:])</span>
-<span class="n">result_explain_prediction_default</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">show_in_notebook</span><span class="p">()</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><a id='MLX-whatif'></a></p>
-<h2 id="Interactive-What-If-Explanations">Interactive What-If Explanations<a class="anchor-link" href="#Interactive-What-If-Explanations">&#182;</a></h2>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>The Oracle AutoMLx solution offers also What-IF tool to explain a trained ML model's predictions through a simple interactive interface.</p>
-<p>You can use What-IF explainer to explore and visualize immediately how changing a sample value will affect the model's prediction. Furthermore, What-IF can be used to visualize how model's predictions are related to any feature of the dataset.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">explainer</span><span class="o">.</span><span class="n">explore_whatif</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><a id='Counterfactuals'></a></p>
-<h3 id="Counterfactual-Explainers">Counterfactual Explainers<a class="anchor-link" href="#Counterfactual-Explainers">&#182;</a></h3>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Counterfactual explainers are another set of advanced features that Oracle AutoMLx supports, which help to explain a trained ML model's predictions by identifying the minimal set of changes necessary to flip the model's decision, resulting in a different outcome. To achieve this, the solution frames the explanation process as an optimization problem, similar to adversarial discoveries, while ensuring that the counterfactual perturbations used are feasible and diverse.</p>
-<p>With the Oracle AutoMLx solution, users are guaranteed a close to zero-failure rate in generating a set of counterfactual explanations; the explainers might only fail if the reference training set doesn't contain any example with the desired class.
-AutoMLx also provides support for simple constraints on features, using <code>features_to_fix</code> and <code>permitted_range</code>, to ensure the feasibility of the generated counterfactual examples. Additionally, users can use tunable parameters to control the proximity and diversity of the explanations to the original input.</p>
-<p>The Oracle AutoMLx solution supports two strategies for creating counterfactual examples. Users can switch between these strategies by setting <code>strategy</code> to one of the following options:</p>
-<ul>
-<li><p><code>ace</code>: The AutoMLx counterfactual explainer introduced by Oracle Labs that uses KDTree structures to find a set of nearest but diverse counterfactuals per sample.</p>
-</li>
-<li><p><code>dice_random</code>: This is a tool for creating diverse counterfactual explanations (<a href="https://github.com/interpretml/DiCE">https://github.com/interpretml/DiCE</a>).</p>
-</li>
-</ul>
-<p>The final results can be returned either through the interactive interface of <code>What-IF</code> tools to show the model's prediction sensitivity or static tables and figures.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">explainer</span><span class="o">.</span><span class="n">configure_explain_counterfactual</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;dice_random&#39;</span><span class="p">)</span>
-<span class="n">explanations</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">explain_counterfactual</span><span class="p">(</span><span class="n">X_test</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">],</span>
-                                               <span class="n">n_counterfactuals</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-                                               <span class="n">desired_pred</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
-<span class="n">explanations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">show_in_notebook</span><span class="p">()</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><a id='MLX-alfi'></a></p>
-<h3 id="Aggregate-Local-Feature-Importance-&amp;-Local-Feature-Importance-Built-in-Sampling">Aggregate Local Feature Importance &amp; Local Feature Importance Built-in Sampling<a class="anchor-link" href="#Aggregate-Local-Feature-Importance-&amp;-Local-Feature-Importance-Built-in-Sampling">&#182;</a></h3><p>We now summarize all of the individual local feature importance explanations into one single aggregate explanation.</p>
-<p>To speed up the computation of the local feature importance explanations, we enable the explainer's built-in sampling.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">explainer</span><span class="o">.</span><span class="n">configure_explain_prediction</span><span class="p">(</span><span class="n">sampling</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;technique&#39;</span><span class="p">:</span> <span class="s1">&#39;random&#39;</span><span class="p">,</span> <span class="s1">&#39;n_samples&#39;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">})</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># We select 5 random instances here as an example and show the aggregate explanation of those instances.</span>
-<span class="n">local_explanations</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">explain_prediction</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span>
-<span class="n">alfi</span> <span class="o">=</span> <span class="n">explainer</span><span class="o">.</span><span class="n">aggregate</span><span class="p">(</span><span class="n">explanations</span><span class="o">=</span><span class="n">local_explanations</span><span class="p">)</span>
-<span class="n">alfi</span><span class="o">.</span><span class="n">show_in_notebook</span><span class="p">()</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><a id='MLX-advanced'></a></p>
-<h3 id="Advanced-Feature-Importance-Configurations">Advanced Feature Importance Configurations<a class="anchor-link" href="#Advanced-Feature-Importance-Configurations">&#182;</a></h3><p>We now display more advanced configuration for computing feature importance. Here, we will explain a custom isolation forest model from the <code>PyOD</code> package. Note that the MLExplainer object is capable to explain any anomaly detection model, as long as the model follows a pyod-style interface with the <code>predict</code> and <code>predict_proba</code> functions.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pyod_model</span> <span class="o">=</span> <span class="n">IForest</span><span class="p">()</span>
-<span class="n">pyod_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-
-<span class="n">y_pred</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">pyod_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_train</span><span class="p">),</span> <span class="n">index</span><span class="o">=</span><span class="n">X_train</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-<span class="n">explainer_pyod</span> <span class="o">=</span> <span class="n">automlx</span><span class="o">.</span><span class="n">MLExplainer</span><span class="p">(</span><span class="n">pyod_model</span><span class="p">,</span>
-                                   <span class="n">X_train</span><span class="p">,</span>
-                                   <span class="n">target_names</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Normal&#39;</span><span class="p">,</span> <span class="s1">&#39;Anomaly&#39;</span><span class="p">],</span>
-                                   <span class="n">task</span><span class="o">=</span><span class="s2">&quot;anomaly_detection&quot;</span><span class="p">)</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><a id='MLX-changing'></a></p>
-<h4 id="Changing-the-number-of-iterations">Changing the number of iterations<a class="anchor-link" href="#Changing-the-number-of-iterations">&#182;</a></h4><p>One can modify the number of iterations <code>n_iter</code> used to evaluate the global importance of the model, or the local importance of a prediction.</p>
-<p>Increasing <code>n_iter</code> requires a linear increase in computation time. It however provides more
-accurate importance estimates, thereby decreasing the variance in repeated calls to
-<code>explain_model</code>/<code>explain_prediction</code>.</p>
-<p>The default value is auto, which selects a suitable default value based on the choice of
-the method of explanation. Decreasing the number of iterations to 1 also means that the confidence intervals are no longer available.</p>
-<p>In this example, because we are explaining a different model, the order of the most important features has changed.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">result_explain_model_increase_n_iter</span> <span class="o">=</span> <span class="n">explainer_pyod</span><span class="o">.</span><span class="n">explain_model</span><span class="p">(</span><span class="n">n_iter</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">result_explain_model_increase_n_iter</span><span class="o">.</span><span class="n">show_in_notebook</span><span class="p">()</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><a id='MLX-including'></a></p>
-<h4 id="Including-the-effects-of-feature-interactions-(with-Shapley-feature-importance)">Including the effects of feature interactions (with Shapley feature importance)<a class="anchor-link" href="#Including-the-effects-of-feature-interactions-(with-Shapley-feature-importance)">&#182;</a></h4><p>The Oracle AutoMLx solution allows one to change the effect of feature interactions. This can be done through the <code>tabulator_type</code> argument of both global and local importance methods.</p>
-<p><code>tabulator_type</code> can be set to one of those three options: <code>permutation</code>, <code>kernel_shap</code>, <code>shapley</code>, <code>shap_pi</code></p>
-<ul>
-<li><p><code>permutation</code>: This value is the default method in the MLExplainer object, and the behaviour was described above</p>
-</li>
-<li><p><code>kernel_shap</code>: Feature importance attributions will be calculated using an approximation of the Shapley value method. It typically provides relatively high-quality approximations; however, it currently does not provide confidence intervals.</p>
-</li>
-<li><p><code>shapley</code>: Feature importance is computed using the popular game-theoretic Shapley value method. Technically, this measures the importance of each feature while including the effect of all feature interactions. As a result, it runs in exponential time with respect to the number of features in the dataset. This method also includes the interaction effects of the other features, which means that if two features contain duplicate information, they will be less important. Note that the interpretation of this method's result is a bit different from the permutation method's result. An interested reader may find <a href='https://christophm.github.io/interpretable-ml-book/shapley.html'>this</a> a good source for learning more about it.</p>
-</li>
-<li><p><code>shap_pi</code>: Feature importance attributions will be computed using an approximation of the Shapley value method. It runs in linear time, but may miss the effect of interactions between some features, which may therefore produce lower-quality results. Most likely, you will notice that this method yields larger confidence intervals than the other two.</p>
-</li>
-</ul>
-<p><strong>Summary: <code>permutation</code> can miss important features for AD. Exact SHAP (<code>shapley</code>) doesn't, but it is exponential in running time. <code>kernel_shap</code> is an approximation of exact SHAP method that does not provide confidence intervals. <code>shap_pi</code> is linear, thus faster than exact SHAP and kernel_shap but unstable and very random leads to lower quality approximations.</strong></p>
-
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><a id='MLX-advance-tabulator-prediction'></a></p>
-<h5 id="Local-feature-importance-with-kernel_shap">Local feature importance with kernel_shap<a class="anchor-link" href="#Local-feature-importance-with-kernel_shap">&#182;</a></h5>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">explainer_pyod</span><span class="o">.</span><span class="n">configure_explain_prediction</span><span class="p">(</span><span class="n">tabulator_type</span><span class="o">=</span><span class="s2">&quot;kernel_shap&quot;</span><span class="p">,</span>
-                                           <span class="n">sampling</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;technique&#39;</span><span class="p">:</span> <span class="s1">&#39;random&#39;</span><span class="p">,</span> <span class="s1">&#39;n_samples&#39;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">})</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">anomaly_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">y_pred</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">index</span> <span class="o">=</span> <span class="n">anomaly_indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">result_explain_prediction_kernel_shap</span> <span class="o">=</span> <span class="n">explainer_pyod</span><span class="o">.</span><span class="n">explain_prediction</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">index</span><span class="p">:</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">,:])</span>
-<span class="n">result_explain_prediction_kernel_shap</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">show_in_notebook</span><span class="p">()</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><a id='MLX-advanced-ale'></a></p>
-<h3 id="Advanced-Feature-Dependence-Options-(ALE)">Advanced Feature Dependence Options (ALE)<a class="anchor-link" href="#Advanced-Feature-Dependence-Options-(ALE)">&#182;</a></h3><p>We now show how to use an alternative method for computing feature dependence: accumulated local effects (ALE). ALE explanations are sometimes considered a better alternative to PDPs when features are correlated, because it does not evaluate the model outside of its training distribution in these cases. For more information, see <a href="https://christophm.github.io/interpretable-ml-book/ale.html">https://christophm.github.io/interpretable-ml-book/ale.html</a>.</p>
-<p>Given a dataset, an ALE displays the average change in the output of the model, accumulated of multiple small changes in one or two features, when all other features are held fixed. By default, the ALE explanations are centered around 0, and thus, unlike PDPs, ALEs show the change in the prediction measured by changing a given feature, rather than the average model's prediction for a particular feature value.</p>
-
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>The X-axis is the value of the <code>V17</code> feature and the y-axis is the corresponding computed ALE (price unit).</p>
-<p>The histogram on top shows the distribution of the value of the <code>V17</code> feature in the dataset.</p>
-
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs  ">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div>
-<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-     <div class="CodeMirror cm-s-jupyter">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">explainer_pyod</span><span class="o">.</span><span class="n">configure_explain_feature_dependence</span><span class="p">(</span><span class="n">explanation_type</span><span class="o">=</span><span class="s1">&#39;ale&#39;</span><span class="p">)</span>
-<span class="n">result_explain_feature_dependence_default</span> <span class="o">=</span> <span class="n">explainer_pyod</span><span class="o">.</span><span class="n">explain_feature_dependence</span><span class="p">([</span><span class="s1">&#39;V17&#39;</span><span class="p">])</span>
-<span class="n">result_explain_feature_dependence_default</span><span class="o">.</span><span class="n">show_in_notebook</span><span class="p">()</span>
-</pre></div>
-
-     </div>
-</div>
-</div>
-</div>
-
-</div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
-</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><a id='ref'></a></p>
-<h2 id="References">References<a class="anchor-link" href="#References">&#182;</a></h2><ul>
-<li>Oracle AutoML <a href="http://www.vldb.org/pvldb/vol13/p3166-yakovlev.pdf">http://www.vldb.org/pvldb/vol13/p3166-yakovlev.pdf</a></li>
-<li>scikit-learn <a href="https://scikit-learn.org/stable/">https://scikit-learn.org/stable/</a></li>
-<li>Interpretable Machine Learning <a href="https://christophm.github.io/interpretable-ml-book/">https://christophm.github.io/interpretable-ml-book/</a></li>
-<li>LIME <a href="https://arxiv.org/pdf/1602.04938">https://arxiv.org/pdf/1602.04938</a></li>
-<li>OpenML (Credit Card Fraud Dataset) <a href="https://www.openml.org/d/1597">https://www.openml.org/d/1597</a></li>
-</ul>
-
-</div>
-</div>
-</div>
 </div>
 </body>
 
