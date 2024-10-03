@@ -15,7 +15,7 @@ To run the demo notebooks yourself:
 
 ## Documentation
 
-The demo notebooks in this repository serve as supplementary documentation for the AutoMLx package. The AutoMLx class documentation is available on [docs.oracle.com](https://docs.oracle.com/en-us/iaas/tools/automlx/latest/v24.3.0/index.html).
+The demo notebooks in this repository serve as supplementary documentation for the AutoMLx package. The AutoMLx class documentation is available on [docs.oracle.com](https://docs.oracle.com/en-us/iaas/tools/automlx/latest/latest/).
 
 ## Examples
 
